@@ -310,14 +310,25 @@ export default function Index() {
     // Hitung sudut agar pointer menunjuk tepat ke tengah segmen yang dipilih
     const offsetToCenter = anglePerItem / 2;
     const targetSegmentAngle = itemIndex * anglePerItem + offsetToCenter;
-    
-    // Tambahkan putaran penuh (10 putaran) dan random kecil untuk variasi
-    const spins = 3600; // 10 putaran penuh
+
+    const spins = 3600; 
     const randomOffset = (Math.random() - 0.5) * anglePerItem * 0.3;
     
-    // Target akhir: pointer di atas harus menunjuk ke segmen
-    // Karena pointer di posisi 0 derajat (atas), kita perlu memutar wheel agar segmen ada di posisi itu
-    const targetAngle = spins + (360 - targetSegmentAngle) + randomOffset;
+    const currentRotation = gameState.wheelAngle % 360;
+
+// 2. Tentukan posisi target absolut (di mana kita ingin roda berhenti 0-360)
+const desiredRotation = (360 - targetSegmentAngle) + randomOffset;
+
+// 3. Hitung selisih jarak yang harus ditempuh
+let rotationNeeded = desiredRotation - currentRotation;
+
+// 4. Jika hasilnya negatif (mundur), tambahkan 360 agar tetap berputar maju (clockwise)
+if (rotationNeeded < 0) {
+  rotationNeeded += 360;
+}
+
+// 5. Total putaran adalah jumlah spin penuh + selisih jarak yang dibutuhkan
+const targetAngle = spins + rotationNeeded;
 
     animateWheel(targetAngle, selectedItem);
   };
